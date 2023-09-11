@@ -31,38 +31,59 @@ async function run() {
       const serviceCollection = client.db("carDoctor").collection("services");
       const checkoutCollection = client.db("carDoctor").collection("checkout");
 
-      app.get('/services', async(req, res) => {
+      app.get('/services', async (req, res) => {
          const cursor = serviceCollection.find();
-         const result =await cursor.toArray();
+         const result = await cursor.toArray();
          res.send(result)
-       });
-       
-       app.get('/services/:id', async (req, res) => {
-         const id =req.params.id
-         const query = { _id:new ObjectId(id) };
-         const options = {
-            projection: {  title: 1, price: 1, service_id: 1 }
-          };
-      
-         const result = await serviceCollection.findOne(query,options);
-         res.json(result);
-       });
+      });
 
-       app.post('/checkout', async(req, res) => {
+      app.get('/services/:id', async (req, res) => {
+         const id = req.params.id
+         const query = { _id: new ObjectId(id) };
+         const options = {
+            projection: { title: 1, price: 1, service_id: 1, img: 1 }
+         };
+
+         const result = await serviceCollection.findOne(query, options);
+         res.json(result);
+      });
+
+      app.post('/checkout', async (req, res) => {
          const order = req.body;
          console.log(order);
          const result = await checkoutCollection.insertOne(order);
          res.send(result)
-       });
+      });
 
-       app.get('/checkout', async(req, res) => {
-         let query ={}
-         if(req.query?.email){
-            query={email:req.query.email}
+      app.get('/checkout', async (req, res) => {
+         let query = {}
+         if (req.query?.email) {
+            query = { email: req.query.email }
          }
          const result = await checkoutCollection.find(query).toArray();
          res.send(result)
-       });
+      });
+
+      app.delete('/checkout:id', async (req, res) => {
+         const id = req.params.id
+         const query = { _id: new ObjectId(id) };
+         const result = await checkoutCollection.deleteOne(query);
+         res.send(result)
+      })
+      app.patch('/checkout:id', async (req, res) => {
+         const id = req.params.id
+         const updatebooking=req.body;
+
+         const filter = { _id: new ObjectId(id) };
+         const updateDoc = {
+            $set: {
+              status:updatebooking.status
+            },
+          };
+          console.log(updateDoc);
+          const result = await checkoutCollection.updateOne(filter, updateDoc);
+          res.send(result)
+      })
 
 
 
