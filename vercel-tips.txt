@@ -1,0 +1,7 @@
+# if you face problame with vercel 
+-----------------------------------
+** that shows your index file on display 
+
+** then you just ensure that you make your vercel confige file name vercel.json
+
+** then ensure its cofigure data or config json
